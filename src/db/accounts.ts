@@ -65,11 +65,17 @@ export function addTrackedAccount(account: Omit<TrackedAccount, 'id'>): number {
 /**
  * Get all tracked accounts
  */
-export function getAllTrackedAccounts(): TrackedAccount[] {
+export function getAllTrackedAccounts(operatorId?: number): TrackedAccount[] {
   const db = getDatabase()
-  const rows = db
-    .prepare('SELECT * FROM tracked_accounts ORDER BY created_at DESC')
-    .all() as TrackedAccountRow[]
+
+  const query = operatorId
+    ? 'SELECT * FROM tracked_accounts WHERE operator_id = ? ORDER BY created_at DESC'
+    : 'SELECT * FROM tracked_accounts ORDER BY created_at DESC'
+
+  const rows = operatorId
+    ? (db.prepare(query).all(operatorId) as TrackedAccountRow[])
+    : (db.prepare(query).all() as TrackedAccountRow[])
+
   return rows.map(rowToAccount)
 }
 

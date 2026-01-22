@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vacuum Dashboard - Solana Rent Reclaim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              dark: {
+                bg: '#000000',
+                card: '#0d0d0d',
+                elevated: '#1a1a1a',
+              },
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        background: #000000;
+        color: #ffffff;
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <!-- Header -->
+    <header
+      class="border-b border-white/10 bg-black/80 backdrop-blur-xl sticky top-0 z-50"
+    >
+      <div class="max-w-7xl mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">🧹</span>
+            <h1 class="text-xl font-bold">Vacuum Dashboard</h1>
+          </div>
+
+          <!-- Operator Selector -->
+          <div class="flex items-center gap-4">
+            <label class="text-sm text-gray-400">Operator:</label>
+            <select
+              id="operatorSelect"
+              class="px-4 py-2 bg-dark-elevated border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+            >
+              <option value="">All Operators</option>
+            </select>
+
+            <!-- Auto Refresh Toggle -->
+            <button
+              id="refreshBtn"
+              class="px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition"
+            >
+              Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Tracked -->
+        <div class="bg-dark-card border border-white/10 rounded-xl p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm text-gray-400">Total Tracked</span>
+            <span class="text-2xl">📊</span>
+          </div>
+          <div class="text-3xl font-bold" id="statTotalTracked">--</div>
+          <div class="text-xs text-gray-500 mt-1">accounts monitored</div>
+        </div>
+
+        <!-- Total Locked -->
+        <div class="bg-dark-card border border-white/10 rounded-xl p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm text-gray-400">Rent Locked</span>
+            <span class="text-2xl">🔒</span>
+          </div>
+          <div class="text-3xl font-bold" id="statRentLocked">-- SOL</div>
+          <div class="text-xs text-gray-500 mt-1">in active accounts</div>
+        </div>
+
+        <!-- Reclaimable -->
+        <div class="bg-dark-card border border-white/10 rounded-xl p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm text-gray-400">Reclaimable</span>
+            <span class="text-2xl">💰</span>
+          </div>
+          <div class="text-3xl font-bold text-yellow-400" id="statReclaimable">
+            --
+          </div>
+          <div class="text-xs text-gray-500 mt-1">accounts ready</div>
+        </div>
+
+        <!-- Total Reclaimed -->
+        <div class="bg-dark-card border border-white/10 rounded-xl p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm text-gray-400">Total Reclaimed</span>
+            <span class="text-2xl">✅</span>
+          </div>
+          <div class="text-3xl font-bold text-green-400" id="statReclaimed">
+            -- SOL
+          </div>
+          <div class="text-xs text-gray-500 mt-1">recovered rent</div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Account Status Pie Chart -->
+        <div class="bg-dark-card border border-white/10 rounded-xl p-6">
+          <h3 class="text-lg font-semibold mb-4">Account Status</h3>
+          <div class="h-64">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Reclaim History Line Chart -->
+        <div class="bg-dark-card border border-white/10 rounded-xl p-6">
+          <h3 class="text-lg font-semibold mb-4">
+            Reclaim History (Last 30 Days)
+          </h3>
+          <div class="h-64">
+            <canvas id="historyChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Reclaims Table -->
+      <div class="bg-dark-card border border-white/10 rounded-xl p-6 mb-8">
+        <h3 class="text-lg font-semibold mb-4">Recent Reclaims</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-white/10">
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  Account
+                </th>
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  Amount
+                </th>
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  Reason
+                </th>
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  Date
+                </th>
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  TX
+                </th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr>
+                <td colspan="5" class="text-center py-8 text-gray-500">
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tracked Accounts Table -->
+      <div class="bg-dark-card border border-white/10 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold">Tracked Accounts</h3>
+          <div class="flex gap-2">
+            <select
+              id="statusFilter"
+              class="px-3 py-1.5 bg-dark-elevated border border-white/10 rounded-lg text-sm"
+            >
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="reclaimable">Reclaimable</option>
+              <option value="reclaimed">Reclaimed</option>
+              <option value="protected">Protected</option>
+            </select>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-white/10">
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  Pubkey
+                </th>
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  Type
+                </th>
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  Rent
+                </th>
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  Status
+                </th>
+                <th
+                  class="text-left py-3 px-4 text-sm font-medium text-gray-400"
+                >
+                  Last Checked
+                </th>
+              </tr>
+            </thead>
+            <tbody id="accountsTableBody">
+              <tr>
+                <td colspan="5" class="text-center py-8 text-gray-500">
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-16 border-t border-white/10 py-6">
+      <div class="max-w-7xl mx-auto px-6 text-center text-sm text-gray-500">
+        <p>
+          Vacuum Dashboard • Auto-refresh every 30s •
+          <span id="lastUpdate">--</span>
+        </p>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

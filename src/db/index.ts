@@ -66,6 +66,33 @@ export function initDatabase(): Database.Database {
     );
   `)
 
+  // Initialize operators table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS operators (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE NOT NULL,
+      keypair_path TEXT NOT NULL,
+      treasury_address TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      is_default BOOLEAN DEFAULT 0
+    );
+  `)
+
+  // Add operator_id column to tracked_accounts if it doesn't exist
+  const columns = db
+    .prepare('PRAGMA table_info(tracked_accounts)')
+    .all() as any[]
+  const hasOperatorId = columns.some((col) => col.name === 'operator_id')
+
+  if (!hasOperatorId) {
+    db.exec(
+      'ALTER TABLE tracked_accounts ADD COLUMN operator_id INTEGER REFERENCES operators(id);',
+    )
+    db.exec(
+      'ALTER TABLE reclaim_history ADD COLUMN operator_id INTEGER REFERENCES operators(id);',
+    )
+  }
+
   logger.info(`Database initialized at: ${dbPath}`)
   return db
 }

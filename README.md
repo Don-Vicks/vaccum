@@ -2,337 +2,316 @@
 
 **Suck up forgotten rent from Solana accounts.**
 
-An automated rent-reclaim bot that monitors sponsored accounts and safely reclaims rent SOL when accounts are closed or eligible for cleanup.
+Vacuum is an automated rent-reclaim bot that monitors token accounts and safely reclaims rent SOL when accounts are closed or have zero balance. Built for Kora node operators and anyone managing sponsored Solana accounts.
 
-## 📖 Understanding Solana Rent & Kora Sponsorship
-
-### What is Rent on Solana?
-
-Every account on Solana must hold **rent** (SOL) to remain active on the blockchain. This is essentially a storage fee:
-
-| Account Type              | Typical Rent |
-| ------------------------- | ------------ |
-| Minimum (0 bytes)         | ~0.00089 SOL |
-| Token Account (165 bytes) | ~0.00204 SOL |
-| 1KB Account               | ~0.00696 SOL |
-
-Accounts can be **rent-exempt** by holding 2 years worth of rent upfront. When an account is **closed**, the remaining lamports (including rent) are returned to a designated recipient.
-
-### How Kora Sponsors Accounts
-
-Kora is a gasless transaction infrastructure for Solana that allows apps to sponsor:
-
-1. **Account Creation** - Kora pays the rent for new accounts (Token Accounts, ATAs, PDAs)
-2. **Transaction Fees** - Kora covers gas fees for user transactions
-
-When Kora sponsors account creation:
-
-```
-User Transaction → Kora Node Intercepts → Kora Pays Rent → Account Created
-                                              ↓
-                                     Rent SOL Locked in Account
-```
-
-### Where Rent Gets Locked
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     RENT LOCKING FLOW                           │
-├─────────────────────────────────────────────────────────────────┤
-│  1. User initiates action (e.g., receive NFT, create wallet)    │
-│  2. Transaction requires new account creation                   │
-│  3. Kora node sponsors the transaction                          │
-│  4. Kora treasury pays rent (~0.002 SOL per token account)      │
-│  5. Rent SOL is now LOCKED in the new account                   │
-│  6. Over time, many accounts become unused/inactive             │
-│  7. Rent remains locked unless accounts are explicitly closed    │
-│         → This is the "silent capital loss"                     │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### The Problem
-
-- Kora operators sponsor thousands of accounts
-- Many become inactive (user closed wallet, emptied tokens, etc.)
-- Rent SOL stays locked indefinitely
-- **No automated way to track or reclaim** this rent
-- Result: **Silent capital loss**
-
-### The Solution
-
-This bot:
-
-1. **Monitors** all sponsored accounts
-2. **Detects** when accounts are closed or have zero balance
-3. **Safely reclaims** rent back to the operator treasury
-4. **Reports** on rent status (locked vs. reclaimed)
+![NPM Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Solana](https://img.shields.io/badge/solana-compatible-purple)
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- Node.js >= 20.0.0
-- Solana CLI (for keypair generation)
-
-### Installation
-
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/kora-rent-reclaim
-cd kora-rent-reclaim
+# Clone and install
+git clone https://github.com/your-username/vacuum-sol
+cd vacuum-sol
+npm install && npm run build
 
-# Install dependencies
-npm install
-
-# Copy environment template
+# Configure
 cp .env.example .env
+# Edit .env with your TREASURY_ADDRESS
 
-# Generate operator keypair (if needed)
-solana-keygen new -o operator-keypair.json
-
-# Edit .env with your configuration
+# Run
+npm start -- scan          # Find accounts
+npm start -- check --all   # Find reclaimable
+npm start -- reclaim --dry-run  # Preview reclaim
 ```
 
-### Configuration
+---
 
-Edit `.env` with your settings:
+## 📖 Understanding Solana Rent
 
-```env
-# Solana RPC (devnet for testing)
-SOLANA_RPC_URL=https://api.devnet.solana.com
+### What is Rent?
 
-# Your treasury address (where reclaimed SOL goes)
-TREASURY_ADDRESS=YourTreasuryPublicKeyHere
+Every Solana account must hold **rent** (SOL) to stay active:
 
-# Path to operator keypair
-OPERATOR_KEYPAIR_PATH=./operator-keypair.json
+| Account Type              | Rent Cost    |
+| ------------------------- | ------------ |
+| Token Account (165 bytes) | ~0.00204 SOL |
+| 1KB Account               | ~0.00696 SOL |
 
-# Safety: Start with dry-run enabled
-DRY_RUN=true
-```
+When accounts are **closed**, this rent is returned to a designated address.
 
-### Build
+### The Problem
 
-```bash
-npm run build
-```
+- Kora/paymaster operators sponsor thousands of accounts
+- Many get abandoned (users close wallets, empty tokens, etc.)
+- Rent stays locked forever unless explicitly reclaimed
+- **Result**: Silent capital loss
+
+### The Solution
+
+Vacuum automatically:
+
+1. **Tracks** sponsored accounts in a local database
+2. **Detects** accounts with 0 balance (safe to close)
+3. **Reclaims** rent back to your treasury
+4. **Reports** locked vs reclaimed totals
+
+---
+
+## ✨ Features
+
+| Feature                 | Description                                       |
+| ----------------------- | ------------------------------------------------- |
+| 🔍 **Smart Detection**  | Finds zero-balance token accounts safe to close   |
+| 🛡️ **Safety First**     | Dry-run mode, whitelists, balance verification    |
+| 🤖 **Telegram Bot**     | Monitor and trigger reclaims from your phone      |
+| 📊 **Audit Trail**      | Every reclaim logged with TX signatures           |
+| ⏰ **Automation Ready** | Run on schedule with cron, PM2, or GitHub Actions |
+| 💻 **CLI Interface**    | 8 powerful commands for full control              |
 
 ---
 
 ## 📋 CLI Commands
 
-### `scan` - Scan for Accounts to Track
-
 ```bash
-# Scan all token accounts owned by operator
-npm start -- scan
+# Scanning
+vacuum scan                # Scan operator's token accounts
+vacuum scan --tx <sig>     # Scan specific transactions
 
-# Scan specific transactions for sponsored accounts
-npm start -- scan --tx <signature1> <signature2>
+# Checking
+vacuum check --all         # Find all reclaimable accounts
+vacuum check --address <pubkey>  # Check specific account
+
+# Reclaiming
+vacuum reclaim --dry-run   # Preview reclaim (safe)
+vacuum reclaim --yes       # Actually reclaim
+vacuum reclaim --max 20    # Limit to 20 accounts
+
+# Reporting
+vacuum report              # Show summary
+vacuum report --history    # Show reclaim history
+vacuum report --format json  # Export as JSON
+
+# Protection
+vacuum protect --add <pubkey> --reason "Active user"
+vacuum protect --remove <pubkey>
+vacuum protect --list
+
+# Listing
+vacuum list                # List all tracked accounts
+vacuum list --status reclaimable  # Filter by status
+
+# Bot
+vacuum bot                 # Start Telegram bot
+
+# Config
+vacuum config              # Show configuration
 ```
 
-### `check` - Find Reclaimable Accounts
+---
+
+## 🤖 Telegram Integration
+
+### Setup
+
+1. Create a bot: Message `@BotFather` on Telegram → `/newbot`
+2. Get your chat ID: Message `@userinfobot`
+3. Add to `.env`:
+   ```env
+   TELEGRAM_BOT_TOKEN=your-bot-token
+   TELEGRAM_CHAT_ID=your-chat-id
+   ```
+
+### Run the Bot
 
 ```bash
-# Check all tracked accounts
-npm start -- check --all
-
-# Check a specific account
-npm start -- check --address <pubkey>
+npm start -- bot
 ```
 
-### `reclaim` - Reclaim Rent
+### Telegram Commands
 
-```bash
-# Preview reclaim (dry run)
-npm start -- reclaim --dry-run
+| Command            | Action            |
+| ------------------ | ----------------- |
+| `/status`          | Show rent summary |
+| `/scan`            | Scan for accounts |
+| `/check`           | Find reclaimable  |
+| `/reclaim`         | Preview reclaim   |
+| `/reclaim_execute` | Actually reclaim  |
+| `/history`         | Recent reclaims   |
 
-# Reclaim up to 10 accounts
-npm start -- reclaim --max 10 --yes
+---
 
-# Reclaim without dry run
-npm start -- reclaim --yes
-```
+## ⚙️ Configuration
 
-### `report` - Generate Reports
+Create a `.env` file:
 
-```bash
-# Show summary
-npm start -- report
+```env
+# Required
+SOLANA_RPC_URL=https://api.devnet.solana.com
+TREASURY_ADDRESS=<your-wallet-address>
+OPERATOR_KEYPAIR_PATH=./operator-keypair.json
 
-# Show reclaim history
-npm start -- report --history
+# Optional
+DRY_RUN=true
+COOLDOWN_HOURS=24
+MIN_INACTIVE_DAYS=7
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
 
-# Export as JSON
-npm start -- report --format json
-```
-
-### `protect` - Manage Protected Accounts
-
-```bash
-# Add account to whitelist
-npm start -- protect --add <pubkey> --reason "Active user"
-
-# Remove from whitelist
-npm start -- protect --remove <pubkey>
-
-# List protected accounts
-npm start -- protect --list
-```
-
-### `list` - List Tracked Accounts
-
-```bash
-# List all accounts
-npm start -- list
-
-# Filter by status
-npm start -- list --status reclaimable
-```
-
-### `config` - Show Configuration
-
-```bash
-npm start -- config
+# Database
+DB_PATH=./data/accounts.db
 ```
 
 ---
 
 ## 🛡️ Safety Features
 
-1. **Dry Run Mode** - Preview all actions before executing
-2. **Protected Accounts** - Whitelist accounts that should never be reclaimed
-3. **Zero Balance Check** - Only close token accounts with 0 balance
-4. **Authority Verification** - Ensures operator has close authority
-5. **Audit Trail** - All reclaims logged with transaction signatures
-6. **Cooldown Period** - Configurable wait time before reclaiming inactive accounts
+✅ **Dry-Run Mode** - Preview all actions before executing  
+✅ **Zero Balance Check** - Only closes accounts with 0 tokens  
+✅ **Protected Accounts** - Whitelist accounts to never reclaim  
+✅ **Authority Verification** - Confirms operator owns the account  
+✅ **Audit Trail** - All reclaims logged with TX signatures  
+✅ **Cooldown Periods** - Wait N days before reclaiming inactive accounts
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-src/
-├── index.ts              # CLI entry point
-├── config.ts             # Configuration management
-├── core/
-│   ├── types.ts          # Type definitions
-│   ├── monitor.ts        # Account monitoring/scanning
-│   ├── detector.ts       # Reclaimable account detection
-│   └── reclaimer.ts      # Rent reclaim execution
-├── db/
-│   ├── index.ts          # SQLite database setup
-│   └── accounts.ts       # Account CRUD operations
-├── services/
-│   ├── solana.ts         # Solana RPC wrapper
-│   └── reporter.ts       # Report generation
-└── utils/
-    ├── logger.ts         # Colored logging
-    └── helpers.ts        # Utility functions
+vacuum-sol/
+├── src/
+│   ├── index.ts              # CLI entry point
+│   ├── config.ts             # Environment configuration
+│   ├── core/
+│   │   ├── types.ts          # TypeScript interfaces
+│   │   ├── monitor.ts        # Account scanning
+│   │   ├── detector.ts       # Reclaimable detection
+│   │   └── reclaimer.ts      # Rent reclaim execution
+│   ├── db/
+│   │   ├── index.ts          # SQLite setup
+│   │   └── accounts.ts       # CRUD operations
+│   ├── services/
+│   │   ├── solana.ts         # Solana RPC wrapper
+│   │   ├── telegram.ts       # Telegram bot
+│   │   └── reporter.ts       # Report generation
+│   └── utils/
+│       ├── logger.ts         # Colored logging
+│       └── helpers.ts        # Utilities
+├── scripts/
+│   └── simulate.ts           # Devnet testing
+└── landing/
+    └── index.html            # Landing page
 ```
 
 ---
 
 ## 🧪 Testing on Devnet
 
-### 1. Setup Devnet Environment
+### 1. Setup
 
 ```bash
-# Set Solana CLI to devnet
-solana config set --url devnet
+# Generate keypair
+solana-keygen new -o operator-keypair.json
 
 # Get devnet SOL
-solana airdrop 2 --keypair operator-keypair.json
+solana airdrop 2 --keypair operator-keypair.json --url devnet
+
+# Configure for devnet
+# Edit .env: SOLANA_RPC_URL=https://api.devnet.solana.com
 ```
 
 ### 2. Create Test Accounts
 
 ```bash
-# Run simulation script to create test token accounts
-npm run simulate create
-
-# This creates several token accounts with 0 balance
+npx tsx scripts/simulate.ts create
 ```
 
-### 3. Scan and Check
+This creates token accounts with 0 balance for testing.
+
+### 3. Run the Bot
 
 ```bash
-# Scan operator's accounts
 npm start -- scan
-
-# Check for reclaimable
 npm start -- check --all
-```
-
-### 4. Test Dry Run
-
-```bash
-# Preview reclaim
 npm start -- reclaim --dry-run
 ```
 
-### 5. Execute Reclaim
+### 4. Actual Reclaim
 
 ```bash
-# Actually reclaim (with confirmation skip)
 DRY_RUN=false npm start -- reclaim --yes
 ```
 
 ---
 
-## 📊 Report Example
+## 📊 Example Report
 
 ```
 📊 Rent Reclaim Summary
-┌────────────────────────────────────────┐
-│ Total Accounts Tracked: 150            │
-│ ├─ Active:      85                     │
-│ ├─ Reclaimable: 42                     │
-│ ├─ Reclaimed:   20                     │
-│ └─ Protected:   3                      │
-│                                        │
-│ 💰 Rent Status                         │
-│ ├─ Locked:    0.285 SOL                │
-│ └─ Reclaimed: 0.041 SOL                │
-└────────────────────────────────────────┘
+┌────────────────────────────────┐
+│ Total Accounts Tracked: 150    │
+│ ├─ Active:      85             │
+│ ├─ Reclaimable: 42             │
+│ ├─ Reclaimed:   20             │
+│ └─ Protected:   3              │
+│                                │
+│ 💰 Rent Status                 │
+│ ├─ Locked:    0.285 SOL        │
+│ └─ Reclaimed: 0.041 SOL        │
+└────────────────────────────────┘
 ```
 
 ---
 
-## 🔧 Extending for Production
+## 🔧 Automation
 
-### Adding Telegram Alerts
-
-```typescript
-// Future: Add telegram notification service
-import { Telegram } from 'telegraf'
-
-async function notifyReclaim(amount: number, accounts: number) {
-  await bot.telegram.sendMessage(
-    CHAT_ID,
-    `✅ Reclaimed ${amount} SOL from ${accounts} accounts`,
-  )
-}
-```
-
-### Cron-Based Automation
+### Cron
 
 ```bash
-# Add to crontab for daily checks
-0 6 * * * cd /path/to/bot && npm start -- reclaim --yes >> /var/log/kora-reclaim.log
+# Add to crontab for daily 6am checks
+0 6 * * * cd /path/to/vacuum-sol && DRY_RUN=false npm start -- reclaim --yes
 ```
 
-### Dashboard Integration
+### PM2
 
-The `--format json` option outputs structured data that can be consumed by monitoring dashboards like Grafana.
+```bash
+npm install -g pm2
+pm2 start npm --name "vacuum-reclaim" --cron "0 6 * * *" -- start -- reclaim --yes
+```
+
+### GitHub Actions
+
+```yaml
+name: Daily Reclaim
+on:
+  schedule:
+    - cron: '0 6 * * *'
+jobs:
+  reclaim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm install && npm run build
+      - run: npm start -- reclaim --yes
+        env:
+          TREASURY_ADDRESS: ${{ secrets.TREASURY_ADDRESS }}
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Open an issue or PR.
 
 ---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE)
 
 ---
 
@@ -341,3 +320,13 @@ MIT License - see [LICENSE](LICENSE) for details.
 - [Kora](https://kora.network) - Gasless transaction infrastructure
 - [Solana](https://solana.com) - High-performance blockchain
 - SuperteamNG - Bounty program
+
+---
+
+<div align="center">
+  <strong>Built with ❤️ for the Solana ecosystem</strong>
+  <br><br>
+  <a href="https://github.com/your-username/vacuum-sol">GitHub</a> •
+  <a href="https://t.me/vacuumsol">Telegram</a> •
+  <a href="https://your-landing-page.com">Website</a>
+</div>

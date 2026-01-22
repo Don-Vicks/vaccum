@@ -391,6 +391,116 @@ program
     }
   })
 
+// ==================== OPERATOR COMMAND ====================
+program
+  .command('operator')
+  .description('Manage multiple operator accounts')
+  .argument('<action>', 'Action: add, list, use, remove')
+  .argument('[name]', 'Operator name')
+  .option('--keypair <path>', 'Path to keypair file')
+  .option('--treasury <address>', 'Treasury address')
+  .option('--default', 'Set as default operator')
+  .action(async (action, name, options) => {
+    try {
+      const {
+        getAllOperators,
+        addOperator,
+        getOperatorByName,
+        setDefaultOperator,
+        removeOperator,
+      } = await import('./db/operators.js')
+
+      if (action === 'list') {
+        const operators = getAllOperators()
+        if (operators.length === 0) {
+          logger.info('No operators configured.')
+          logger.info(
+            'Add an operator with: vacuum operator add <name> --keypair <path> --treasury <address>',
+          )
+          return
+        }
+
+        logger.newline()
+        logger.info(`👥 Operators (${operators.length}):`)
+        logger.divider()
+        for (const op of operators) {
+          const defaultTag = op.is_default ? chalk.green(' [DEFAULT]') : ''
+          logger.info(`  ${op.name}${defaultTag}`)
+          logger.info(`    ID: ${op.id}`)
+          logger.info(`    Treasury: ${op.treasury_address.toBase58()}`)
+          logger.info(`    Keypair: ${op.keypair_path}`)
+          logger.info('')
+        }
+      } else if (action === 'add') {
+        if (!name) {
+          logger.error('Operator name required')
+          process.exit(1)
+        }
+        if (!options.keypair || !options.treasury) {
+          logger.error('Both --keypair and --treasury are required')
+          process.exit(1)
+        }
+
+        addOperator(
+          name,
+          options.keypair,
+          new PublicKey(options.treasury),
+          options.default,
+        )
+        logger.success(`Added operator: ${name}`)
+      } else if (action === 'use') {
+        if (!name) {
+          logger.error('Operator name required')
+          process.exit(1)
+        }
+
+        const op = getOperatorByName(name)
+        if (!op) {
+          logger.error(`Operator not found: ${name}`)
+          process.exit(1)
+        }
+
+        setDefaultOperator(op.id)
+      } else if (action === 'remove') {
+        if (!name) {
+          logger.error('Operator name required')
+          process.exit(1)
+        }
+
+        const op = getOperatorByName(name)
+        if (!op) {
+          logger.error(`Operator not found: ${name}`)
+          process.exit(1)
+        }
+
+        removeOperator(op.id)
+      } else {
+        logger.error(`Unknown action: ${action}`)
+        logger.info('Available actions: add, list, use, remove')
+        process.exit(1)
+      }
+    } catch (error) {
+      logger.error(String(error))
+      process.exit(1)
+    }
+  })
+
+// ==================== DASHBOARD COMMAND ====================
+program
+  .command('dashboard')
+  .description('Start the web dashboard server')
+  .option('-p, --port <port>', 'Port to run on', '3333')
+  .action(async (options) => {
+    try {
+      process.env.DASHBOARD_PORT = options.port
+      const { startDashboardServer } = await import('./server/index.js')
+      startDashboardServer()
+    } catch (error) {
+      logger.error('Failed to start dashboard:', String(error))
+      process.exit(1)
+    }
+  })
+
 // ==================== BOT COMMAND ====================
 program
   .command('bot')
