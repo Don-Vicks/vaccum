@@ -49,10 +49,34 @@ export OPERATOR_KEYPAIR_PATH=~/.vacuum/operator-keypair.json
 
 # Or create a .env file in your project directory
 cat > .env << EOF
+# Solana RPC Configuration
 SOLANA_RPC_URL=https://api.devnet.solana.com
+
+# Operator treasury address - rent will be reclaimed here
 TREASURY_ADDRESS=<your-wallet-address>
+
+# Path to operator keypair file (must have authority to close accounts)
 OPERATOR_KEYPAIR_PATH=~/.vacuum/operator-keypair.json
+
+# Kora Node Configuration (optional - for monitoring sponsored accounts)
+KORA_NODE_URL=
+
+# Safety Configuration
 DRY_RUN=true
+COOLDOWN_HOURS=24
+MIN_INACTIVE_DAYS=7
+
+# Telegram Bot (optional)
+# Create bot via @BotFather on Telegram
+TELEGRAM_BOT_TOKEN=
+# Your personal chat ID (get via @userinfobot)
+TELEGRAM_CHAT_ID=
+
+# Database path
+DB_PATH=./data/accounts.db
+
+# Dashboard port (optional)
+DASHBOARD_PORT=3333
 EOF
 ```
 
