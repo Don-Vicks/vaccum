@@ -234,6 +234,9 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 TREASURY_ADDRESS=<your-wallet-address>
 OPERATOR_KEYPAIR_PATH=./operator-keypair.json
 
+# Optional - Kora Node
+KORA_NODE_URL=
+
 # Optional
 DRY_RUN=true
 COOLDOWN_HOURS=24
@@ -243,6 +246,7 @@ TELEGRAM_CHAT_ID=
 
 # Database
 DB_PATH=./data/accounts.db
+DASHBOARD_PORT=3333
 ```
 
 ---
