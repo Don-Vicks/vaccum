@@ -2,30 +2,84 @@
 
 **Suck up forgotten rent from Solana accounts.**
 
-Vacuum is an automated rent-reclaim bot that monitors token accounts and safely reclaims rent SOL when accounts are closed or have zero balance. Built for Kora node operators and anyone managing sponsored Solana accounts.
+Vacuum is an automated rent-reclaim bot that monitors **operator-owned** token accounts and safely reclaims rent SOL when accounts are closed or have zero balance. Perfect for custodial services, development environments, and anyone managing their own Solana token accounts at scale.
 
-![NPM Version](https://img.shields.io/badge/version-1.0.0-blue)
+[![NPM Version](https://img.shields.io/npm/v/vacuum-sol)](https://www.npmjs.com/package/vacuum-sol)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Solana](https://img.shields.io/badge/solana-compatible-purple)
 
 ---
 
-## 🚀 Quick Start
+## � Installation
+
+### Install via npm (Recommended)
 
 ```bash
-# Clone and install
-git clone https://github.com/your-username/vacuum-sol
-cd vacuum-sol
+# Install globally
+npm install -g vacuum-sol
+
+# Verify installation
+vacuum --version
+vacuum --help
+```
+
+### Or clone from source
+
+```bash
+git clone https://github.com/Don-Vicks/vaccum.git
+cd vaccum
 npm install && npm run build
+npm link  # Make 'vacuum' command available globally
+```
 
-# Configure
-cp .env.example .env
-# Edit .env with your TREASURY_ADDRESS
+---
 
-# Run
-npm start -- scan          # Find accounts
-npm start -- check --all   # Find reclaimable
-npm start -- reclaim --dry-run  # Preview reclaim
+## 🚀 Quick Start
+
+### 1. Initial Setup
+
+```bash
+# Create a configuration directory
+mkdir -p ~/.vacuum
+
+# Set up your environment variables
+export SOLANA_RPC_URL=https://api.devnet.solana.com
+export TREASURY_ADDRESS=<your-wallet-address>
+export OPERATOR_KEYPAIR_PATH=~/.vacuum/operator-keypair.json
+
+# Or create a .env file in your project directory
+cat > .env << EOF
+SOLANA_RPC_URL=https://api.devnet.solana.com
+TREASURY_ADDRESS=<your-wallet-address>
+OPERATOR_KEYPAIR_PATH=~/.vacuum/operator-keypair.json
+DRY_RUN=true
+EOF
+```
+
+### 2. Run Your First Scan
+
+```bash
+# Scan for accounts
+vacuum scan
+
+# Find reclaimable accounts
+vacuum check --all
+
+# Preview reclaim (safe, dry-run mode)
+vacuum reclaim --dry-run
+
+# Actually reclaim rent
+vacuum reclaim --yes
+```
+
+### 3. View Reports
+
+```bash
+# Show summary
+vacuum report
+
+# Show history
+vacuum report --history
 ```
 
 ---
@@ -45,10 +99,12 @@ When accounts are **closed**, this rent is returned to a designated address.
 
 ### The Problem
 
-- Kora/paymaster operators sponsor thousands of accounts
-- Many get abandoned (users close wallets, empty tokens, etc.)
-- Rent stays locked forever unless explicitly reclaimed
-- **Result**: Silent capital loss
+- Developers and custodial services create thousands of token accounts
+- Many get abandoned (testing, unused wallets, closed positions, etc.)
+- Rent stays locked in zero-balance accounts forever unless reclaimed
+- **Result**: Silent capital loss of ~0.00204 SOL per account
+
+> **⚠️ Important**: Vacuum reclaims rent from **accounts you own** (where your operator keypair is the account authority). It does NOT work for accounts where you merely paid transaction fees as a paymaster. See [Authority Model](#-authority-model) for details.
 
 ### The Solution
 
@@ -175,6 +231,34 @@ DB_PATH=./data/accounts.db
 ✅ **Authority Verification** - Confirms operator owns the account  
 ✅ **Audit Trail** - All reclaims logged with TX signatures  
 ✅ **Cooldown Periods** - Wait N days before reclaiming inactive accounts
+
+---
+
+## 🔐 Authority Model
+
+**Critical Understanding**: Vacuum can only reclaim rent from accounts where your operator keypair is the **account owner/authority**.
+
+### ✅ Works For:
+
+- Token accounts created by your operator wallet
+- Custodial service accounts you manage
+- Development/testing accounts you own
+- Any account where `closeAuthority` is your operator
+
+### ❌ Does NOT Work For:
+
+- User-owned accounts (even if you paid fees as a Kora paymaster)
+- Accounts where you're only the fee payer, not the owner
+- Third-party wallets using your paymaster service
+
+**Why?** On Solana, paying transaction fees ≠ account ownership. Only the account's `owner` or `closeAuthority` can close it and reclaim rent.
+
+### Use Cases
+
+1. **Custodial Services**: Reclaim rent from your users' accounts you manage
+2. **Development**: Clean up test accounts from devnet/testnet
+3. **Personal Management**: Monitor your own token accounts
+4. **Bulk Account Management**: Manage rent across multiple operator profiles
 
 ---
 
@@ -326,7 +410,7 @@ MIT License - see [LICENSE](LICENSE)
 <div align="center">
   <strong>Built with ❤️ for the Solana ecosystem</strong>
   <br><br>
-  <a href="https://github.com/your-username/vacuum-sol">GitHub</a> •
-  <a href="https://t.me/vacuumsol">Telegram</a> •
-  <a href="https://your-landing-page.com">Website</a>
+  <a href="https://github.com/Don-Vicks/vaccum">GitHub</a> •
+  <a href="https://www.npmjs.com/package/vacuum-sol">NPM</a> •
+  <a href="http://vaccum-bot.vercel.app">Website</a>
 </div>

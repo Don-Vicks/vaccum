@@ -1,0 +1,49 @@
+# Source files
+src/
+scripts/
+tests/
+
+# Development files
+.env
+.env.example
+*.log
+tsconfig.json
+vitest.config.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Landing page (not needed in npm package)
+landing/
+
+# Dashboard (not needed in npm package)
+dashboard/
+
+# Database files
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Keypairs and sensitive
+*.json
+!package.json
+!tsconfig.json
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+
+# Documentation artifacts
+brain/
+.gemini/

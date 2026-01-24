@@ -374,21 +374,26 @@
           <div class="code-header">
             <span>Terminal</span>
           </div>
-          <pre><code><span class="comment"># Clone the repo</span>
-git clone https://github.com/your-username/vacuum-sol
-cd vacuum-sol
+          <pre><code><span class="comment"># Install via NPM (Recommended)</span>
+npm install -g vacuum-sol
+vacuum --version
+vacuum --help
 
-<span class="comment"># Install & build</span>
-npm install && npm run build
+<span class="comment"># Or clone from source</span>
+git clone https://github.com/Don-Vicks/vaccum.git
+cd vaccum && npm install && npm run build
+npm link
 
 <span class="comment"># Configure</span>
-cp .env.example .env
-<span class="comment"># Edit .env with your treasury address</span>
+export SOLANA_RPC_URL=https://api.devnet.solana.com
+export TREASURY_ADDRESS=<your-wallet-address>
+export OPERATOR_KEYPAIR_PATH=~/.vacuum/operator.json
 
 <span class="comment"># Run!</span>
-npm start -- scan
-npm start -- check --all
-npm start -- reclaim --dry-run</code></pre>
+vacuum scan
+vacuum check --all
+vacuum reclaim --dry-run
+vacuum report</code></pre>
         </div>
       </div>
     </section>
@@ -401,12 +406,12 @@ npm start -- reclaim --dry-run</code></pre>
           <p>Join operators who are sucking up their forgotten rent.</p>
           <div class="cta-buttons">
             <a
-              href="https://github.com/your-username/vacuum-sol"
+              href="https://github.com/Don-Vicks/vaccum"
               class="btn btn-primary btn-large"
             >
               View on GitHub
             </a>
-            <a href="https://t.me/vacuumsol" class="btn btn-outline btn-large">
+            <a href="https://www.npmjs.com/package/vacuum-sol" class="btn btn-outline btn-large">
               Join Telegram
             </a>
           </div>

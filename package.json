@@ -18,13 +18,30 @@
   },
   "keywords": [
     "solana",
-    "kora",
     "rent",
     "reclaim",
-    "gasless"
+    "automation",
+    "cli",
+    "bot",
+    "telegram",
+    "web3",
+    "token-accounts"
   ],
-  "author": "",
+  "author": "Don-Vicks",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Don-Vicks/vaccum.git"
+  },
+  "homepage": "https://github.com/Don-Vicks/vaccum#readme",
+  "bugs": {
+    "url": "https://github.com/Don-Vicks/vaccum/issues"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@solana/spl-token": "^0.4.9",
     "@solana/web3.js": "^1.98.0",
