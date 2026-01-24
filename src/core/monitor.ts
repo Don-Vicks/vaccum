@@ -21,7 +21,9 @@ export class AccountMonitor {
   /**
    * Scan all token accounts owned by the operator and add them to tracking
    */
-  async scanOperatorAccounts(): Promise<TrackedAccount[]> {
+  async scanOperatorAccounts(
+    _options = { fullScan: false },
+  ): Promise<TrackedAccount[]> {
     logger.info('Scanning operator token accounts...')
 
     const tokenAccounts = await getOperatorTokenAccounts()
@@ -69,7 +71,7 @@ export class AccountMonitor {
    */
   async scanFromSignatures(
     signatures: string[],
-    options: ScanOptions = {},
+    _options: ScanOptions = {},
   ): Promise<TrackedAccount[]> {
     const conn = getConnection()
     const tracked: TrackedAccount[] = []

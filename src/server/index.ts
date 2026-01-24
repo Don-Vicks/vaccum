@@ -9,6 +9,7 @@ import {
 } from '../db/accounts.js'
 import { initDatabase } from '../db/index.js'
 import { getAllOperators } from '../db/operators.js'
+import { koraService } from '../services/kora.js'
 import { logger } from '../utils/logger.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -20,6 +21,15 @@ const PORT = process.env.DASHBOARD_PORT || 3333
 // Middleware
 app.use(cors())
 app.use(express.json())
+
+// Security headers to allow CDNs
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:;",
+  )
+  next()
+})
 
 // Serve static dashboard files
 const dashboardPath = path.join(__dirname, '../../dashboard')
@@ -115,6 +125,25 @@ app.get('/api/operators', (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch operators',
+    })
+  }
+})
+
+/**
+ * GET /api/node-status - Get Kora Node health status
+ */
+app.get('/api/node-status', async (req: Request, res: Response) => {
+  try {
+    const status = await koraService.getNodeStatus()
+    res.json({
+      success: true,
+      data: status,
+    })
+  } catch (error) {
+    logger.error('Error checking node status:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Failed to check node status',
     })
   }
 })

@@ -24,8 +24,9 @@ export function initDatabase(): Database.Database {
 
   db = new Database(dbPath)
 
-  // Enable WAL mode for better concurrency
+  // Enable WAL mode for better performance
   db.pragma('journal_mode = WAL')
+  db.pragma('user_version', { simple: true })
 
   // Create tables
   db.exec(`

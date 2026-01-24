@@ -26,16 +26,17 @@ export interface Config {
   dbPath: string
 }
 
-function getEnvOrThrow(key: string): string {
+// Helper to getenv or default
+function getEnv(key: string, defaultValue?: string): string {
   const value = process.env[key]
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${key}`)
+  if (value === undefined) {
+    if (defaultValue !== undefined) {
+      return defaultValue
+    }
+    // Return empty string if no default (optional vars)
+    return ''
   }
   return value
-}
-
-function getEnvOrDefault(key: string, defaultValue: string): string {
-  return process.env[key] || defaultValue
 }
 
 export function loadConfig(): Config {
@@ -54,20 +55,20 @@ export function loadConfig(): Config {
     )
   }
 
-  const operatorKeypairPath = getEnvOrDefault(
+  const operatorKeypairPath = getEnv(
     'OPERATOR_KEYPAIR_PATH',
     './operator-keypair.json',
   )
 
   return {
-    rpcUrl: getEnvOrDefault('SOLANA_RPC_URL', 'https://api.devnet.solana.com'),
+    rpcUrl: getEnv('SOLANA_RPC_URL', 'https://api.devnet.solana.com'),
     treasuryAddress,
     operatorKeypairPath,
     koraNodeUrl: process.env.KORA_NODE_URL,
-    dryRun: getEnvOrDefault('DRY_RUN', 'true') === 'true',
-    cooldownHours: parseInt(getEnvOrDefault('COOLDOWN_HOURS', '24'), 10),
-    minInactiveDays: parseInt(getEnvOrDefault('MIN_INACTIVE_DAYS', '7'), 10),
-    dbPath: getEnvOrDefault('DB_PATH', './data/accounts.db'),
+    dryRun: getEnv('DRY_RUN', 'true') === 'true',
+    cooldownHours: parseInt(getEnv('COOLDOWN_HOURS', '24'), 10),
+    minInactiveDays: parseInt(getEnv('MIN_INACTIVE_DAYS', '7'), 10),
+    dbPath: getEnv('DB_PATH', './data/accounts.db'),
   }
 }
 

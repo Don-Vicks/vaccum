@@ -234,8 +234,12 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 TREASURY_ADDRESS=<your-wallet-address>
 OPERATOR_KEYPAIR_PATH=./operator-keypair.json
 
-# Optional - Kora Node
-KORA_NODE_URL=
+OPERATOR_KEYPAIR_PATH=./operator-keypair.json
+
+# Optional - Kora Node (for health monitoring)
+# Set your Kora RPC URL to enable health checks in the dashboard
+KORA_NODE_URL=https://your-kora-node.up.railway.app
+
 
 # Optional
 DRY_RUN=true

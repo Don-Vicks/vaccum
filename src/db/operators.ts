@@ -97,9 +97,10 @@ export function addOperator(
  */
 export function getAllOperators(): Operator[] {
   const db = getOperatorsDb()
-  const rows = db
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rows: any[] = db
     .prepare('SELECT * FROM operators ORDER BY created_at DESC')
-    .all() as any[]
+    .all()
 
   return rows.map((row) => ({
     id: row.id,
@@ -114,11 +115,12 @@ export function getAllOperators(): Operator[] {
 /**
  * Get operator by ID
  */
-export function getOperatorById(id: number): Operator | null {
+export function getOperatorById(id: number): Operator | undefined {
   const db = getOperatorsDb()
-  const row = db.prepare('SELECT * FROM operators WHERE id = ?').get(id) as any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const row: any = db.prepare('SELECT * FROM operators WHERE id = ?').get(id)
 
-  if (!row) return null
+  if (!row) return undefined
 
   return {
     id: row.id,
@@ -133,13 +135,20 @@ export function getOperatorById(id: number): Operator | null {
 /**
  * Get operator by name
  */
-export function getOperatorByName(name: string): Operator | null {
+export function getOperatorByName(name: string): Operator | undefined {
   const db = getOperatorsDb()
-  const row = db
-    .prepare('SELECT * FROM operators WHERE name = ?')
-    .get(name) as any
+  const row = db.prepare('SELECT * FROM operators WHERE name = ?').get(name) as
+    | {
+        id: number
+        name: string
+        keypair_path: string
+        treasury_address: string
+        created_at: string
+        is_default: number
+      }
+    | undefined
 
-  if (!row) return null
+  if (!row) return undefined
 
   return {
     id: row.id,
@@ -154,16 +163,19 @@ export function getOperatorByName(name: string): Operator | null {
 /**
  * Get default operator
  */
-export function getDefaultOperator(): Operator | null {
+export function getDefaultOperator(): Operator | undefined {
   const db = getOperatorsDb()
-  const row = db
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const row: any = db
     .prepare('SELECT * FROM operators WHERE is_default = 1')
-    .get() as any
+    .get()
 
   if (!row) {
     // Return first operator if no default set
-    const first = db.prepare('SELECT * FROM operators LIMIT 1').get() as any
-    if (!first) return null
+    const first = db
+      .prepare('SELECT * FROM operators ORDER BY created_at ASC LIMIT 1')
+      .get() as any
+    if (!first) return undefined
     return {
       id: first.id,
       name: first.name,
