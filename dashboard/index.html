@@ -40,21 +40,45 @@
       class="border-b border-white/10 bg-black/80 backdrop-blur-xl sticky top-0 z-50"
     >
       <div class="max-w-7xl mx-auto px-6 py-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
+        <div
+          class="flex flex-col md:flex-row items-center justify-between gap-4"
+        >
+          <div class="flex items-center gap-3 self-start md:self-auto">
             <span class="text-3xl">🧹</span>
             <h1 class="text-xl font-bold">Vacuum Dashboard</h1>
           </div>
 
-          <!-- Operator Selector -->
-          <div class="flex items-center gap-4">
-            <label class="text-sm text-gray-400">Operator:</label>
-            <select
-              id="operatorSelect"
-              class="px-4 py-2 bg-dark-elevated border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+          <!-- Operator Selector & Controls -->
+          <div
+            class="flex flex-wrap items-center gap-4 mt-4 md:mt-0 justify-end flex-1"
+          >
+            <!-- Node Status -->
+            <div
+              id="nodeStatus"
+              class="hidden flex items-center gap-2 px-3 py-1.5 bg-dark-elevated rounded-lg border border-white/10 text-sm whitespace-nowrap"
             >
-              <option value="">All Operators</option>
-            </select>
+              <div
+                class="w-2 h-2 rounded-full bg-gray-500 flex-shrink-0"
+                id="nodeStatusIndicator"
+              ></div>
+              <span
+                class="text-gray-400 truncate max-w-[120px]"
+                id="nodeStatusText"
+                >Checking Node...</span
+              >
+            </div>
+
+            <div class="flex items-center gap-2">
+              <label class="text-sm text-gray-400 hidden sm:block"
+                >Operator:</label
+              >
+              <select
+                id="operatorSelect"
+                class="px-4 py-2 bg-dark-elevated border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20 text-sm max-w-[150px] sm:max-w-none"
+              >
+                <option value="">All Operators</option>
+              </select>
+            </div>
 
             <!-- Auto Refresh Toggle -->
             <button

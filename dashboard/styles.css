@@ -18,6 +18,13 @@ body {
   gap: 1.5rem;
 }
 
+@media (max-width: 768px) {
+  /* Stack grid items on mobile */
+  .grid {
+    gap: 1rem;
+  }
+}
+
 @media (min-width: 768px) {
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
