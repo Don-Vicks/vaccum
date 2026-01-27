@@ -95,3 +95,13 @@ export function getConfig(): Config {
   }
   return _config
 }
+
+export function setConfig(config: Partial<Config>) {
+  // If config is not loaded, load defaults first then merge
+  const current = _config || loadConfig()
+  _config = { ...current, ...config }
+}
+
+export function resetConfig() {
+  _config = null
+}

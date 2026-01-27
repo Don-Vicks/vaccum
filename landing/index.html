@@ -51,8 +51,8 @@
           <span class="gradient-text">Forgotten Rent</span>
         </h1>
         <p class="hero-subtitle">
-          Automatically detect and reclaim rent from inactive sponsored
-          accounts.<br />
+          The ultimate CLI & SDK to automatically detect and reclaim rent from
+          inactive sponsored accounts.<br />
           Suck up every forgotten lamport. Get your SOL back.
         </p>
         <div class="hero-stats">
@@ -197,10 +197,10 @@
           </div>
           <div class="feature-card">
             <div class="feature-icon">💻</div>
-            <h3>CLI Interface</h3>
+            <h3>CLI & SDK</h3>
             <p>
-              Powerful command-line tool with scan, check, reclaim, report, and
-              protect commands.
+              Powerful command-line tool for ops, and a full TypeScript SDK for
+              integrating rent reclamation into your own backend.
             </p>
           </div>
         </div>
@@ -394,6 +394,26 @@ vacuum scan
 vacuum check --all
 vacuum reclaim --dry-run
 vacuum report</code></pre>
+        </div>
+
+        <div class="code-block" style="margin-top: 2rem;">
+          <div class="code-header">
+            <span>TypeScript SDK</span>
+          </div>
+          <pre><code class="language-typescript"><span class="comment">// Use as a library in your own backend</span>
+import { VacuumClient } from 'vacuum-sol';
+
+const client = new VacuumClient({
+  rpcUrl: "https://api.devnet.solana.com",
+  treasury: "YOUR_WALLET_ADDRESS", 
+  keypairPath: "./operator-keypair.json"
+});
+
+// Scan and reclaim programmatically
+const accounts = await client.scan();
+const reclaimable = await client.check(accounts);
+await client.reclaim(reclaimable);</code></pre>
+        </div>
         </div>
       </div>
     </section>

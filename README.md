@@ -224,6 +224,33 @@ npm start -- bot
 
 ---
 
+## 💻 Using as an SDK
+
+Vacuum can be used as a TypeScript library to integrate rent reclamation directly into your backend or scripts.
+
+```typescript
+import { VacuumClient } from 'vacuum-sol'
+
+// Initialize the client
+const client = new VacuumClient({
+  rpcUrl: 'https://api.mainnet-beta.solana.com',
+  treasury: 'YOUR_TREASURY_WALLET_ADDRESS',
+  keypairPath: './operator-keypair.json', // Optional if just checking
+  logLevel: 'info',
+})
+
+// 1. Scan for accounts
+const accounts = await client.scan()
+
+// 2. Check which ones are reclaimable
+const reclaimable = await client.check(accounts)
+
+// 3. Reclaim rent (returns transaction signatures)
+const results = await client.reclaim(reclaimable)
+
+console.log(`Reclaimed from ${results.length} accounts!`)
+```
+
 ## ⚙️ Configuration
 
 Create a `.env` file:

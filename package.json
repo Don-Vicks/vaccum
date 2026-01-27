@@ -1,16 +1,16 @@
 {
   "name": "vacuum-sol",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Vacuum - Suck up forgotten rent from Solana accounts",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "vacuum": "./dist/index.js"
+    "vacuum": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
+    "dev": "tsx watch src/cli.ts",
+    "start": "node dist/cli.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src --ext .ts",
@@ -33,7 +33,7 @@
     "type": "git",
     "url": "https://github.com/Don-Vicks/vaccum.git"
   },
-  "homepage": "https://vacuum-sol.vercel.app",
+  "homepage": "https://vaccum-bot.vercel.app",
   "bugs": {
     "url": "https://github.com/Don-Vicks/vaccum/issues"
   },

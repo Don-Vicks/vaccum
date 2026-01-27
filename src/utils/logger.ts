@@ -1,6 +1,12 @@
 import chalk from 'chalk'
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'success'
+export type LogLevel =
+  | 'debug'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'success'
+  | 'silent'
 
 const LOG_LEVELS: Record<LogLevel, number> = {
   debug: 0,
@@ -8,6 +14,7 @@ const LOG_LEVELS: Record<LogLevel, number> = {
   warn: 2,
   error: 3,
   success: 1,
+  silent: 99,
 }
 
 let currentLogLevel: LogLevel = 'info'
