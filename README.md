@@ -195,20 +195,25 @@ vacuum config              # Show configuration
 
 ## 🤖 Telegram Integration
 
-### Setup
+### Setup & Guide
 
-1. Create a bot: Message `@BotFather` on Telegram → `/newbot`
-2. Get your chat ID: Message `@userinfobot`
-3. Add to `.env`:
-   ```env
-   TELEGRAM_BOT_TOKEN=your-bot-token
-   TELEGRAM_CHAT_ID=your-chat-id
-   ```
+> **👉 [Read the full Telegram Setup Guide](docs/TELEGRAM.md)**
+
+Quick setup:
+
+1.  **Get Token**: Message @BotFather (`/newbot`)
+2.  **Get Chat ID**: Message @userinfobot (`/start`)
+3.  **Update Config**: Add to `.env`
+
+```env
+TELEGRAM_BOT_TOKEN=...
+TELEGRAM_CHAT_ID=...
+```
 
 ### Run the Bot
 
 ```bash
-npm start -- bot
+npm run bot
 ```
 
 ### Telegram Commands
@@ -225,6 +230,8 @@ npm start -- bot
 ---
 
 ## 💻 Using as an SDK
+
+> **👉 [Read the SDK vs CLI Guide](docs/SDK_VS_CLI.md)**
 
 Vacuum can be used as a TypeScript library to integrate rent reclamation directly into your backend or scripts.
 
@@ -460,9 +467,9 @@ MIT License - see [LICENSE](LICENSE)
 
 ## 🙏 Acknowledgements
 
-- [Kora](https://kora.network) - Gasless transaction infrastructure
+- [Kora](https://launch.solana.com/docs/kora) - Gasless transaction infrastructure
 - [Solana](https://solana.com) - High-performance blockchain
-- SuperteamNG - Bounty program
+- SuperteamNG Bounty
 
 ---
 
@@ -471,5 +478,5 @@ MIT License - see [LICENSE](LICENSE)
   <br><br>
   <a href="https://github.com/Don-Vicks/vaccum">GitHub</a> •
   <a href="https://www.npmjs.com/package/vacuum-sol">NPM</a> •
-  <a href="http://vaccum-bot.vercel.app">Website</a>
+  <a href="http://vaccum-bot.vercel.app">Website</a> 
 </div>
