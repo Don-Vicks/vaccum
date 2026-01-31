@@ -16,8 +16,6 @@ export const Dashboard: FC = () => {
   useEffect(() => {
     if (publicKey) {
       scan().catch(() => { });
-    } else {
-      // Optional: redirect or just show empty state
     }
   }, [publicKey, scan]);
 
@@ -47,25 +45,22 @@ export const Dashboard: FC = () => {
 
   if (!publicKey) {
     return (
-      <div className="text-center mt-12 animate-fade-in">
-        <div className="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-lg inline-block">
-          <p className="text-slate-400 mb-4">Connect your wallet to scan for zombie accounts.</p>
-        </div>
+      <div className="dashboard-empty">
+        <p>Connect your wallet to scan for zombie accounts.</p>
       </div>
     );
   }
 
   return (
-  return (
-    <div className="dashboard-container animate-fade-in text-left">
-      {/* Stats Card */}
+    <div className="dashboard-container">
+      {/* Stats Grid */}
       <div className="dashboard-grid">
-        <div className="dashboard-card dashboard-stats-card group">
-          <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+        {/* Total Reclaimable Card */}
+        <div className="dashboard-card dashboard-stats-card">
           <h3 className="dashboard-label">Total Reclaimable Rent</h3>
           <div className="dashboard-value">
             {scanning ? (
-              <span className="animate-pulse text-[var(--text-muted)]">Scanning...</span>
+              <span style={{ color: 'var(--text-muted)' }}>Scanning...</span>
             ) : (
               <span className="dashboard-value-gradient">
                 {formatSol(totalReclaimable)}
@@ -74,6 +69,7 @@ export const Dashboard: FC = () => {
           </div>
         </div>
 
+        {/* Actions Card */}
         <div className="dashboard-card dashboard-actions-card">
           <button
             onClick={scan}
@@ -82,9 +78,8 @@ export const Dashboard: FC = () => {
           >
             {scanning ? 'Scanning...' : 'Rescan Accounts'}
           </button>
-          
           {successCount > 0 && (
-            <div className="mt-4 text-green-400 text-sm animate-bounce font-medium">
+            <div style={{ marginTop: '16px', color: '#22c55e', fontSize: '14px' }}>
               Successfully reclaimed {successCount} accounts!
             </div>
           )}
@@ -109,10 +104,18 @@ export const Dashboard: FC = () => {
           )}
         </div>
 
-        <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
+        <div style={{ overflowX: 'auto', maxHeight: '500px', overflowY: 'auto' }}>
           {scanning ? (
-            <div className="dashboard-empty flex flex-col items-center">
-              <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mb-4"></div>
+            <div className="dashboard-empty">
+              <div style={{
+                width: '48px',
+                height: '48px',
+                border: '4px solid rgba(34, 211, 238, 0.3)',
+                borderTopColor: '#22d3ee',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 16px'
+              }}></div>
               Scanning blockchain...
             </div>
           ) : accounts.length === 0 ? (
@@ -120,48 +123,69 @@ export const Dashboard: FC = () => {
               No token accounts found.
             </div>
           ) : (
-            <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 bg-[var(--bg-elevated)] z-10 shadow-sm">
-                <tr className="text-[var(--text-muted)] text-sm uppercase tracking-wider">
-                  <th className="p-6 font-medium border-b border-[var(--border-color)]">Account Address</th>
-                  <th className="p-6 font-medium border-b border-[var(--border-color)]">Mint</th>
-                  <th className="p-6 font-medium border-b border-[var(--border-color)]">Status</th>
-                  <th className="p-6 font-medium text-right border-b border-[var(--border-color)]">Rent (SOL)</th>
+            <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+              <thead style={{ background: 'var(--bg-elevated)', position: 'sticky', top: 0, zIndex: 10 }}>
+                <tr style={{ color: 'var(--text-muted)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <th style={{ padding: '16px', fontWeight: 500, borderBottom: '1px solid var(--border-color)' }}>Account Address</th>
+                  <th style={{ padding: '16px', fontWeight: 500, borderBottom: '1px solid var(--border-color)' }}>Mint</th>
+                  <th style={{ padding: '16px', fontWeight: 500, borderBottom: '1px solid var(--border-color)' }}>Status</th>
+                  <th style={{ padding: '16px', fontWeight: 500, borderBottom: '1px solid var(--border-color)', textAlign: 'right' }}>Rent (SOL)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border-color)]">
+              <tbody>
                 {accounts.map((account) => (
                   <tr
                     key={account.pubkey.toBase58()}
-                    className="hover:bg-cyan-500/5 transition-colors duration-150 group"
+                    style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                   >
-                    <td className="p-6 font-mono text-[var(--text-secondary)] text-sm flex items-center gap-2">
-                       {shortenPubkey(account.pubkey.toBase58(), 6)}
-                       <a
+                    <td style={{ padding: '16px', fontFamily: 'monospace', fontSize: '14px', color: 'var(--text-primary)' }}>
+                      {shortenPubkey(account.pubkey.toBase58(), 6)}
+                      <a
                         href={`https://solscan.io/account/${account.pubkey.toBase58()}?cluster=devnet`}
                         target="_blank"
                         rel="noreferrer"
-                        className="opacity-0 group-hover:opacity-100 text-xs text-cyan-400 hover:text-cyan-300 ml-2 transition-opacity"
+                        style={{ marginLeft: '8px', color: '#22d3ee', fontSize: '12px', textDecoration: 'none' }}
                       >
                         ↗
                       </a>
                     </td>
-                    <td className="p-6 font-mono text-[var(--text-muted)] text-xs">
-                       {shortenPubkey(account.mint.toBase58(), 4)}
+                    <td style={{ padding: '16px', fontFamily: 'monospace', fontSize: '12px', color: 'var(--text-muted)' }}>
+                      {shortenPubkey(account.mint.toBase58(), 4)}
                     </td>
-                    <td className="p-6">
+                    <td style={{ padding: '16px' }}>
                       {account.status === 'reclaimable' ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '4px 10px',
+                          borderRadius: '6px',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          background: 'rgba(34, 197, 94, 0.2)',
+                          color: '#86efac',
+                          border: '1px solid rgba(34, 197, 94, 0.3)'
+                        }}>
                           Reclaimable
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-700/50 text-slate-400">
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '4px 10px',
+                          borderRadius: '6px',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          background: 'rgba(59, 130, 246, 0.2)',
+                          color: '#93c5fd'
+                        }}>
                           Active
                         </span>
                       )}
                     </td>
-                    <td className="p-6 text-right font-mono text-[var(--text-primary)]">
-                       {formatSol(account.lamports)}
+                    <td style={{ padding: '16px', textAlign: 'right', fontFamily: 'monospace', color: '#22d3ee' }}>
+                      {formatSol(account.lamports)}
                     </td>
                   </tr>
                 ))}
@@ -170,32 +194,20 @@ export const Dashboard: FC = () => {
           )}
         </div>
       </div>
-                      {account.status === 'reclaimable' ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                          Reclaimable
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-700/50 text-slate-400">
-                          Active
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-4 text-right font-mono text-slate-300">
-                      {formatSol(account.lamports)}
-                    </td>
-                  </tr >
-                ))}
-              </tbody >
-            </table >
-          )}
-        </div >
-      </div >
 
-  {(error || reclaimError) && (
-    <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-center animate-fade-in">
-      Error: {error || reclaimError}
+      {(error || reclaimError) && (
+        <div style={{
+          marginTop: '24px',
+          padding: '16px',
+          borderRadius: '12px',
+          background: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid rgba(239, 68, 68, 0.2)',
+          color: '#f87171',
+          textAlign: 'center'
+        }}>
+          Error: {error || reclaimError}
+        </div>
+      )}
     </div>
-  )}
-    </div >
   );
 };
