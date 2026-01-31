@@ -8,7 +8,7 @@ _A technical and philosophical journey through building a tool that recovers SOL
 
 I want to tell you about a problem that's silently draining capital from Solana projects. It's not a hack, not a bug, not market volatility. It's something far more mundane — and that's exactly why it goes unnoticed.
 
-Every token account on Solana requires rent. About 0.002039 SOL, to be precise. This isn't news. But here's what _is_ news: if you're an operator sponsoring accounts on behalf of users — like Kora Labs does for gasless transactions — you're probably hemorrhaging this rent to accounts that no one is using anymore.
+Every token account on Solana requires rent. About 0.002039 SOL, to be precise. This isn't news. But here's what _is_ news: if you're an operator sponsoring accounts on behalf of users — like Kora (built by the Solana Foundation) does for gasless transactions — you're probably hemorrhaging this rent to accounts that no one is using anymore.
 
 The math is brutal. Let's say you've sponsored 20,000 accounts over the last year. That's:
 
@@ -40,7 +40,7 @@ When you close an account, this rent is returned to a designated address. The ke
 
 ### The Kora Operator Model
 
-Kora Labs pioneered a gasless transaction model on Solana. Here's how it works:
+The Solana Foundation built Kora, which pioneered a gasless transaction model on Solana. Here's how it works:
 
 1. A user wants to receive SPL tokens but doesn't have SOL for rent
 2. The Kora "operator" creates a token account on their behalf
