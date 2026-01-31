@@ -1,4 +1,4 @@
-# How We Built Vacuum: A Deep Dive into Automated Rent Reclamation on Solana
+# How I Built Vacuum: A Deep Dive into Automated Rent Reclamation on Solana
 
 _A technical and philosophical journey through building a tool that recovers SOL from inactive sponsored accounts_
 
@@ -16,7 +16,7 @@ The math is brutal. Let's say you've sponsored 20,000 accounts over the last yea
 20,000 × 0.002039 SOL = 40.78 SOL
 ```
 
-At current prices, that's roughly **$5,000 USD** sitting in empty token accounts. Users who emptied their wallets months ago. Users who abandoned the platform. Users who moved their funds elsewhere. Their accounts remain — holding your SOL hostage.
+At current prices, that's roughly **$5,000 USD** sitting in empty token accounts. Users who emptied their wallets months ago. Users who abandoned the platform. Users who moved their funds elsewhere. Their accounts remain — holding ymy SOL hostage.
 
 This is the problem that led us to build **Vacuum**.
 
@@ -24,7 +24,7 @@ This is the problem that led us to build **Vacuum**.
 
 ## Part 1: Understanding the Rent Model
 
-Before we dive into the solution, let's make sure we understand the problem deeply.
+Before I dive into the solution, let's make sure I understand the problem deeply.
 
 ### How Solana Rent Works
 
@@ -59,17 +59,17 @@ Day 180: User has forgotten about the platform
 Day 365: Account still exists, rent still locked, user never returning
 ```
 
-At what point can we safely reclaim this rent? That's the core question Vacuum answers.
+At what point can I safely reclaim this rent? That's the core question Vacuum answers.
 
 ---
 
 ## Part 2: The Safety-First Philosophy
 
-When designing Vacuum, we established an immutable principle:
+When designing Vacuum, I established an immutable principle:
 
 > **We will never close an account that shouldn't be closed.**
 
-This isn't just a nice-to-have. It's the foundation of every design decision. One incorrectly closed account — an account with user funds — would destroy trust instantly. So we built multiple layers of verification.
+This isn't just a nice-to-have. It's the foundation of every design decision. One incorrectly closed account — an account with user funds — would destroy trust instantly. So I built multiple layers of verification.
 
 ### The Three Laws of Vacuum
 
@@ -176,7 +176,7 @@ The `memcmp` filter checks the owner field (at offset 32 in the token account da
 
 #### Method 2: Transaction Signature Parsing
 
-For operators who want to track only _sponsored_ accounts (not all their token accounts), we offer signature-based scanning:
+For operators who want to track only _sponsored_ accounts (not all their token accounts), I offer signature-based scanning:
 
 ```typescript
 async scanFromSignatures(signatures: string[]): Promise<TrackedAccount[]> {
@@ -224,11 +224,11 @@ This approach parses transaction logs to find `createAccount` and `initializeAcc
 
 #### Why SQLite?
 
-You might wonder why we use a local SQLite database instead of querying the chain every time. Several reasons:
+You might wonder why I use a local SQLite database instead of querying the chain every time. Several reasons:
 
 1. **Speed**: Querying the database is ~100x faster than RPC calls
-2. **Offline access**: You can analyze your accounts without network connectivity
-3. **Audit trail**: We keep history of when accounts were tracked, checked, and reclaimed
+2. **Offline access**: You can analyze ymy accounts without network connectivity
+3. **Audit trail**: I keep history of when accounts were tracked, checked, and reclaimed
 4. **Whitelist management**: Protected accounts are stored locally
 
 The database schema:
@@ -345,7 +345,7 @@ Notice the `safe: true` flag. This is crucial. An account can be _detectable_ (w
 
 #### Batch Detection
 
-For efficiency, we provide a batch method:
+For efficiency, I provide a batch method:
 
 ```typescript
 async findAllReclaimable(): Promise<DetectionResult[]> {
@@ -442,7 +442,7 @@ async reclaimTokenAccount(
     };
   }
 
-  // Check 5: Are we the owner?
+  // Check 5: Are I the owner?
   const operator = getOperatorKeypair();
   if (!tokenData.owner.equals(operator.publicKey)) {
     return {
@@ -500,7 +500,7 @@ async reclaimTokenAccount(
 
 #### Why Double-Check Before Closing?
 
-You might wonder: "If we already checked in the Detector, why check again?"
+You might wonder: "If I already checked in the Detector, why check again?"
 
 Because the blockchain moves fast. Between detection and execution:
 
@@ -512,7 +512,7 @@ The 30-second gap between "I found this account" and "I'm closing it" is enough 
 
 #### Batch Processing with Rate Limiting
 
-Closing hundreds of accounts means hundreds of transactions. We need to be responsible:
+Closing hundreds of accounts means hundreds of transactions. I need to be responsible:
 
 ```typescript
 async batchReclaim(
@@ -555,13 +555,13 @@ async batchReclaim(
 }
 ```
 
-The 500ms delay prevents us from overwhelming RPC providers and ensures we don't hit rate limits.
+The 500ms delay prevents us from overwhelming RPC providers and ensures I don't hit rate limits.
 
 ---
 
 ## Part 4: The Interfaces
 
-We built Vacuum to serve different users with different needs.
+I built Vacuum to serve different users with different needs.
 
 ### CLI: For Terminal Lovers and Automation
 
@@ -569,7 +569,7 @@ We built Vacuum to serve different users with different needs.
 # Install globally
 npm install -g vacuum-sol
 
-# Scan your accounts
+# Scan ymy accounts
 vacuum scan
 
 # Check for reclaimable
@@ -609,7 +609,7 @@ The SDK exposes the same functionality as programmatic APIs:
 ```typescript
 import { VacuumClient } from 'vacuum-sol'
 
-// Initialize with your configuration
+// Initialize with ymy configuration
 const client = new VacuumClient({
   rpcUrl: 'https://api.mainnet-beta.solana.com',
   treasury: 'YOUR_TREASURY_WALLET_ADDRESS',
@@ -648,10 +648,10 @@ The SDK is designed to be embedded in:
 
 ### Web Dashboard: For Visual Operators
 
-For operators who prefer clicking over typing, we built a web interface:
+For operators who prefer clicking over typing, I built a web interface:
 
-- Connect your wallet
-- See all your tracked accounts
+- Connect ymy wallet
+- See all ymy tracked accounts
 - One-click reclaim
 - Real-time balance updates
 - Transaction history
@@ -718,14 +718,14 @@ Top Reclaims:
 
 ### Why TypeScript?
 
-The Solana ecosystem is heavily JavaScript/TypeScript. By building in TypeScript, we get:
+The Solana ecosystem is heavily JavaScript/TypeScript. By building in TypeScript, I get:
 
 - Native compatibility with `@solana/web3.js`
 - Type safety for public APIs
 - Easy integration with existing Node.js backends
 - NPM distribution
 
-The trade-off is performance — Rust would be faster. But for our use case (batch operations with RPC calls), network latency dominates runtime, so TypeScript is plenty fast.
+The trade-off is performance — Rust would be faster. But for my use case (batch operations with RPC calls), network latency dominates runtime, so TypeScript is plenty fast.
 
 ### Why SQLite over PostgreSQL?
 
@@ -733,13 +733,13 @@ SQLite is:
 
 - Zero configuration (no server to run)
 - Portable (single file, easy to backup)
-- Fast enough for our scale (millions of accounts per operator)
+- Fast enough for my scale (millions of accounts per operator)
 
-If we needed multi-node deployment or concurrent writes from multiple processes, PostgreSQL would make sense. For a single-operator tool, SQLite is perfect.
+If I needed multi-node deployment or concurrent writes from multiple processes, PostgreSQL would make sense. For a single-operator tool, SQLite is perfect.
 
 ### Why Sequential, Not Parallel Transactions?
 
-We process accounts one at a time with delays. We _could_ parallelize:
+I process accounts one at a time with delays. I _could_ parallelize:
 
 ```typescript
 // Don't do this
@@ -760,9 +760,9 @@ Sequential with delays is slower but more reliable.
 
 ### 1. Safety Cannot Be Bolted On
 
-We designed Vacuum with safety from day one. It's not a feature we added later. Every function, every check, every database schema assumes "we must never close an account with funds."
+I designed Vacuum with safety from day one. It's not a feature I added later. Every function, every check, every database schema assumes "we must never close an account with funds."
 
-If you're building something similar, start with your invariants. What must _never_ happen? Build around that.
+If you're building something similar, start with ymy invariants. What must _never_ happen? Build around that.
 
 ### 2. Dry Run Mode Is Not Optional
 
@@ -792,7 +792,7 @@ Comprehensive logging and database history let us answer that immediately. Worth
 
 ## Part 8: Future Directions
 
-Vacuum is functional today, but there's more we want to build:
+Vacuum is functional today, but there's more I want to build:
 
 1. **Scheduled automation**: Built-in cron-like scheduling without external tools
 2. **Notification webhooks**: Ping a URL when reclaims happen
@@ -804,9 +804,9 @@ Vacuum is functional today, but there's more we want to build:
 
 ## Conclusion: Stop Leaving Money on the Table
 
-If you're sponsoring accounts on Solana, you're probably losing rent to inactive users. We built Vacuum to fix that.
+If you're sponsoring accounts on Solana, you're probably losing rent to inactive users. I built Vacuum to fix that.
 
-The core insight is simple: token accounts with zero balance are safe to close. The implementation is careful: multiple verification layers ensure we never close something we shouldn't.
+The core insight is simple: token accounts with zero balance are safe to close. The implementation is careful: multiple verification layers ensure I never close something I shouldn't.
 
 Try it yourself:
 
