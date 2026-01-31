@@ -158,6 +158,23 @@ body {
   border-color: #ffffff;
 }
 
+.btn-icon {
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border-color: var(--text-secondary);
+}
+
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
