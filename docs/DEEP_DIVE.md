@@ -1,6 +1,6 @@
 # How I Built Vacuum: A Deep Dive into Automated Rent Reclamation on Solana
 
-_A technical and philosophical journey through building a tool that recovers SOL from inactive sponsored accounts_
+_A technical journey through building a tool that recovers SOL from inactive sponsored accounts_
 
 ---
 
@@ -798,7 +798,6 @@ Vacuum is functional today, but there's more I want to build:
 2. **Notification webhooks**: Ping a URL when reclaims happen
 3. **Multi-operator support**: Manage multiple operator wallets from one interface
 4. **Historical analytics**: Charts showing rent locked vs. reclaimed over time
-5. **Kora SDK integration**: Direct hooks into Kora's sponsorship flow
 
 ---
 
@@ -818,17 +817,5 @@ vacuum reclaim --dry-run
 ```
 
 See how much you've been leaving behind.
-
----
-
-**Links:**
-
-- 📦 NPM: `npm install vacuum-sol`
-- 📂 GitHub: [github.com/Don-Vicks/vaccum](https://github.com/Don-Vicks/vaccum)
-- 🌐 Web Dashboard: [Coming soon]
-
-_Built for the SuperteamNG Bounty. Because every lamport counts._
-
----
 
 _If you found this useful, consider sharing it with other Solana developers. The more operators who reclaim their rent, the healthier the ecosystem._
