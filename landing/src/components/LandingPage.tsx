@@ -227,6 +227,144 @@ export const LandingPage: FC = () => {
         </div>
       </section>
 
+      {/* SDK Documentation Section */}
+      <section id="docs" className="features">
+        <div className="container">
+          <h2 className="section-title">Developer Documentation</h2>
+          <p className="section-subtitle">Two ways to use Vacuum: CLI for operators, SDK for builders</p>
+
+          <div className="features-grid" style={{ marginTop: '48px' }}>
+            {/* CLI Card */}
+            <div className="feature-card">
+              <div className="feature-icon">⌨️</div>
+              <h3>CLI Tool</h3>
+              <p style={{ marginBottom: '16px' }}>
+                Perfect for manual operation, cron jobs, and Telegram bot. No coding required.
+              </p>
+              <div className="terminal" style={{ marginTop: '16px', marginBottom: '0' }}>
+                <div className="terminal-header">
+                  <div className="terminal-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <span className="terminal-title">Installation</span>
+                </div>
+                <div className="terminal-body" style={{ padding: '16px' }}>
+                  <div className="terminal-line">
+                    <span className="prompt">$</span> npm install -g vacuum-sol
+                  </div>
+                  <div className="terminal-output blank" style={{ height: '8px' }}></div>
+                  <div className="terminal-line">
+                    <span className="prompt">$</span> vacuum scan
+                  </div>
+                  <div className="terminal-line">
+                    <span className="prompt">$</span> vacuum reclaim --yes
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SDK Card */}
+            <div className="feature-card highlight">
+              <div className="feature-icon">🔧</div>
+              <h3>SDK (TypeScript)</h3>
+              <p style={{ marginBottom: '16px' }}>
+                Integrate rent reclamation into your backend, custom automation, or your own tools.
+              </p>
+              <div className="terminal" style={{ marginTop: '16px', marginBottom: '0' }}>
+                <div className="terminal-header">
+                  <div className="terminal-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <span className="terminal-title">Usage</span>
+                </div>
+                <div className="terminal-body" style={{ padding: '16px', fontSize: '12px' }}>
+                  <div className="terminal-output">
+                    <span style={{ color: '#c678dd' }}>import</span> {'{'}VacuumClient{'}'} <span style={{ color: '#c678dd' }}>from</span> <span style={{ color: '#98c379' }}>'vacuum-sol'</span>
+                  </div>
+                  <div className="terminal-output blank" style={{ height: '8px' }}></div>
+                  <div className="terminal-output">
+                    <span style={{ color: '#c678dd' }}>const</span> client = <span style={{ color: '#c678dd' }}>new</span> <span style={{ color: '#61afef' }}>VacuumClient</span>({'{'}
+                  </div>
+                  <div className="terminal-output">
+                    &nbsp;&nbsp;rpcUrl: <span style={{ color: '#98c379' }}>'https://api.mainnet...'</span>,
+                  </div>
+                  <div className="terminal-output">
+                    &nbsp;&nbsp;treasury: <span style={{ color: '#98c379' }}>'YOUR_WALLET'</span>,
+                  </div>
+                  <div className="terminal-output">
+                    &nbsp;&nbsp;keypairPath: <span style={{ color: '#98c379' }}>'./operator.json'</span>
+                  </div>
+                  <div className="terminal-output">
+                    {'}'})
+                  </div>
+                  <div className="terminal-output blank" style={{ height: '8px' }}></div>
+                  <div className="terminal-output">
+                    <span style={{ color: '#c678dd' }}>const</span> accounts = <span style={{ color: '#c678dd' }}>await</span> client.<span style={{ color: '#61afef' }}>scan</span>()
+                  </div>
+                  <div className="terminal-output">
+                    <span style={{ color: '#c678dd' }}>const</span> results = <span style={{ color: '#c678dd' }}>await</span> client.<span style={{ color: '#61afef' }}>reclaim</span>(accounts)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Comparison Table */}
+          <div style={{
+            marginTop: '64px',
+            background: 'var(--bg-card)',
+            borderRadius: '16px',
+            border: '1px solid var(--border-color)',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              padding: '24px 32px',
+              borderBottom: '1px solid var(--border-color)',
+              background: 'var(--bg-elevated)'
+            }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)' }}>CLI vs SDK Comparison</h3>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+                textAlign: 'left'
+              }}>
+                <thead>
+                  <tr style={{ color: 'var(--text-muted)', fontSize: '14px', textTransform: 'uppercase' }}>
+                    <th style={{ padding: '16px 32px', fontWeight: 500 }}>Feature</th>
+                    <th style={{ padding: '16px 32px', fontWeight: 500 }}>CLI</th>
+                    <th style={{ padding: '16px 32px', fontWeight: 500 }}>SDK</th>
+                  </tr>
+                </thead>
+                <tbody style={{ color: 'var(--text-secondary)' }}>
+                  <tr style={{ borderTop: '1px solid var(--border-color)' }}>
+                    <td style={{ padding: '16px 32px', color: 'var(--text-primary)' }}>Setup</td>
+                    <td style={{ padding: '16px 32px' }}>.env file</td>
+                    <td style={{ padding: '16px 32px' }}>Constructor config</td>
+                  </tr>
+                  <tr style={{ borderTop: '1px solid var(--border-color)' }}>
+                    <td style={{ padding: '16px 32px', color: 'var(--text-primary)' }}>Execution</td>
+                    <td style={{ padding: '16px 32px' }}>Terminal commands</td>
+                    <td style={{ padding: '16px 32px' }}>Function calls</td>
+                  </tr>
+                  <tr style={{ borderTop: '1px solid var(--border-color)' }}>
+                    <td style={{ padding: '16px 32px', color: 'var(--text-primary)' }}>Output</td>
+                    <td style={{ padding: '16px 32px' }}>Console logs</td>
+                    <td style={{ padding: '16px 32px' }}>Return values</td>
+                  </tr>
+                  <tr style={{ borderTop: '1px solid var(--border-color)' }}>
+                    <td style={{ padding: '16px 32px', color: 'var(--text-primary)' }}>Best For</td>
+                    <td style={{ padding: '16px 32px' }}>Operators, cron jobs</td>
+                    <td style={{ padding: '16px 32px' }}>Custom integrations</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="footer">
         <div className="container">
