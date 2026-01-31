@@ -175,6 +175,10 @@ body {
   border-color: var(--text-secondary);
 }
 
+.btn-icon-large {
+  padding: 12px;
+}
+
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
@@ -674,6 +678,12 @@ body {
 .footer-text a {
   color: var(--text-primary);
   text-decoration: none;
+}
+
+.footer-links {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 /* Responsive */
