@@ -662,6 +662,10 @@ body {
 /* Responsive */
 @media (max-width: 768px) {
   .nav-links {
+    gap: 16px;
+  }
+
+  .nav-links a:not(.btn) {
     display: none;
   }
 
