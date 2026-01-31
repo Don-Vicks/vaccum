@@ -16,9 +16,9 @@ The math is brutal. Let's say you've sponsored 20,000 accounts over the last yea
 20,000 × 0.002039 SOL = 40.78 SOL
 ```
 
-At current prices, that's roughly **$5,000 USD** sitting in empty token accounts. Users who emptied their wallets months ago. Users who abandoned the platform. Users who moved their funds elsewhere. Their accounts remain — holding ymy SOL hostage.
+At current prices, that's roughly **$5,000 USD** sitting in empty token accounts. Users who emptied their wallets months ago. Users who abandoned the platform. Users who moved their funds elsewhere. Their accounts remain — holding your SOL hostage.
 
-This is the problem that led us to build **Vacuum**.
+This is the problem that led me to build **Vacuum**.
 
 ---
 
@@ -227,7 +227,7 @@ This approach parses transaction logs to find `createAccount` and `initializeAcc
 You might wonder why I use a local SQLite database instead of querying the chain every time. Several reasons:
 
 1. **Speed**: Querying the database is ~100x faster than RPC calls
-2. **Offline access**: You can analyze ymy accounts without network connectivity
+2. **Offline access**: You can analyze your accounts without network connectivity
 3. **Audit trail**: I keep history of when accounts were tracked, checked, and reclaimed
 4. **Whitelist management**: Protected accounts are stored locally
 
@@ -442,7 +442,7 @@ async reclaimTokenAccount(
     };
   }
 
-  // Check 5: Are I the owner?
+  // Check 5: Am I the owner?
   const operator = getOperatorKeypair();
   if (!tokenData.owner.equals(operator.publicKey)) {
     return {
@@ -555,7 +555,7 @@ async batchReclaim(
 }
 ```
 
-The 500ms delay prevents us from overwhelming RPC providers and ensures I don't hit rate limits.
+The 500ms delay prevents me from overwhelming RPC providers and ensures I don't hit rate limits.
 
 ---
 
@@ -569,7 +569,7 @@ I built Vacuum to serve different users with different needs.
 # Install globally
 npm install -g vacuum-sol
 
-# Scan ymy accounts
+# Scan your accounts
 vacuum scan
 
 # Check for reclaimable
@@ -609,7 +609,7 @@ The SDK exposes the same functionality as programmatic APIs:
 ```typescript
 import { VacuumClient } from 'vacuum-sol'
 
-// Initialize with ymy configuration
+// Initialize with your configuration
 const client = new VacuumClient({
   rpcUrl: 'https://api.mainnet-beta.solana.com',
   treasury: 'YOUR_TREASURY_WALLET_ADDRESS',
@@ -650,8 +650,8 @@ The SDK is designed to be embedded in:
 
 For operators who prefer clicking over typing, I built a web interface:
 
-- Connect ymy wallet
-- See all ymy tracked accounts
+- Connect your wallet
+- See all your tracked accounts
 - One-click reclaim
 - Real-time balance updates
 - Transaction history
@@ -762,7 +762,7 @@ Sequential with delays is slower but more reliable.
 
 I designed Vacuum with safety from day one. It's not a feature I added later. Every function, every check, every database schema assumes "we must never close an account with funds."
 
-If you're building something similar, start with ymy invariants. What must _never_ happen? Build around that.
+If you're building something similar, start with your invariants. What must _never_ happen? Build around that.
 
 ### 2. Dry Run Mode Is Not Optional
 
@@ -786,7 +786,7 @@ Building three interfaces (CLI, SDK, Web) wasn't 3x the work. The core engine is
 
 When something goes wrong (and something always goes wrong), the first question is: "What happened?"
 
-Comprehensive logging and database history let us answer that immediately. Worth the extra code.
+Comprehensive logging and database history let me answer that immediately. Worth the extra code.
 
 ---
 
