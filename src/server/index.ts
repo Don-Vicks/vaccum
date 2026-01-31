@@ -32,8 +32,14 @@ app.use((req, res, next) => {
 })
 
 // Serve static dashboard files
-const dashboardPath = path.join(__dirname, '../../dashboard')
+const dashboardPath = path.join(process.cwd(), 'dashboard')
+logger.info(`Serving dashboard from: ${dashboardPath}`)
 app.use(express.static(dashboardPath))
+
+// Fallback: serve index.html for root
+app.get('/', (req: Request, res: Response) => {
+  res.sendFile(path.join(dashboardPath, 'index.html'))
+})
 
 // Initialize database
 initDatabase()
